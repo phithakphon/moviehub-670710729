@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
-import { getMovies } from '../api/tmdb';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import FeaturedCarousel from '../components/FeaturedCarousel';
-// ลบ import data.js ทิ้ง (ถ้าเหลือไว้แต่ไม่ได้ใช้ Vercel จะ build ล้มเพราะ warning)
+import { movies as localMovies } from '../data/data';
+// TODO ขั้นที่ 5: import { useEffect } from 'react' และ import { getMovies } from '../api/tmdb'
+
 const STEPS = [
   { n: 1, file: 'src/api/tmdb.js', what: 'เขียนส่วน fetch ใน getJSON' },
   { n: 2, file: 'src/api/tmdb.js', what: 'เขียน toMovie แปลง JSON ของ TMDB' },
@@ -11,6 +12,8 @@ const STEPS = [
   { n: 5, file: 'src/pages/Home.jsx', what: 'หนังแนะนำสุ่มจากข้อมูล API ชุดเดียวกัน' },
   { n: 6, file: 'docs/api-wishlist.md', what: 'กรอกรายการ API ที่จะขอจากทีม Backend' },
 ];
+
+// สลับลำดับแบบสุ่มบนสำเนา ไม่แตะ array เดิม
 function shuffle(list) {
   const copy = [...list];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -19,18 +22,13 @@ function shuffle(list) {
   }
   return copy;
 }
-function Home() {
-  const [picks, setPicks] = useState([]);   // เริ่มว่าง รอข้อมูลจาก API แล้วค่อยสุ่ม
 
-  // ใช้ getMovies() ตัวเดียวกับหน้า Movies ถ้าวันนี้เคยโหลดแล้วจะได้จาก localStorage ทันที
-  useEffect(() => {
-    let ignore = false;
-    getMovies()
-      .then(list => { if (!ignore) setPicks(shuffle(list)); })
-      .catch(() => { if (!ignore) setPicks([]); });   // พลาดก็แค่ไม่มีหนังแนะนำ หน้าแรกไม่ควรพัง
-    return () => { ignore = true; };
-  }, []);
-   return (
+function Home() {
+  // สุ่มครั้งเดียวตอน component เกิด แล้วจำไว้ใน state (กดเลื่อนแล้วลำดับไม่เปลี่ยน)
+  // TODO ขั้นที่ 5: เปลี่ยนเป็น useState([]) แล้วใช้ useEffect เรียก getMovies() แล้ว setPicks(shuffle(list))
+  const [picks, setPicks] = useState(() => shuffle(localMovies));
+
+  return (
     <div className="mx-auto max-w-5xl px-4 md:px-6">
       {/* Hero */}
       <section className="py-14 md:py-20">
@@ -85,4 +83,5 @@ function Home() {
     </div>
   );
 }
+
 export default Home;
