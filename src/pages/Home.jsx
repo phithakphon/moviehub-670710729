@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getMovies } from '../api/tmdb';
+import { getMovies } from '../api/backend';
 import { Link } from 'react-router-dom';
 import FeaturedCarousel from '../components/FeaturedCarousel';
 // ลบ import data.js ทิ้ง (ถ้าเหลือไว้แต่ไม่ได้ใช้ Vercel จะ build ล้มเพราะ warning)
